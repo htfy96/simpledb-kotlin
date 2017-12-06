@@ -7,7 +7,8 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-	classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+	    classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_version"
+	    classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
     }
 }
 
@@ -15,10 +16,19 @@ apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'application'
 apply plugin: 'idea'
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 dokka {
 	outputFormat = 'html'
 	outputDirectory = "$buildDir/javadoc"
+}
+
+sourceSets {
+    test.kotlin.srcDirs += 'src/test/kotlin'
+}
+
+junitPlatform {
+    enableStandardTestTask true
 }
 
 defaultTasks 'run'
@@ -29,8 +39,12 @@ repositories {
 }
 
 dependencies {
-	compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-		testCompile 'junit:junit:4.11'
+	    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+		testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
+		testRuntime (
+		    'org.junit.jupiter:junit-jupiter-engine:5.0.2',
+		    'org.junit.platform:junit-platform-launcher:1.0.2'
+		)
 		testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
 
