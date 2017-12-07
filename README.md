@@ -39,19 +39,17 @@ Doc system has been migrated to Dokka. Run
 to generate docs at `build/javadoc`.
 
 ### Generate IDEA project
-```bash
-## Linux
-./gradlew idea
 
-## Windows
-./gradlew.bat idea
-```
+**`gradle idea` has been deprecated**
 
-Users should open `./SimpleDB_2.10.iws` to load the workspace.
+The recommended way to load this project in IDEA is to click Open - select this directory - Click OK.
 
-Several tips:
-- You need manually specify command line arguments(i.e. `studentdb/`) for `Startup` task.
-- By default, IDEA will create `lib/` and `out/` under  current directory. These folders have been excluded from source control.
+After that, IDEA will prompt you to `Import Gradle project`. Click that link, run with default configuration.
+Now this project is opened in IDEA.
+
+To run tests in IDEA, right click `src/test`, choose `Run All tests`.
+
+To launch the server, right click `src/main/kotlin/simpledb/server/Startup`, choose `Run 'simpledb.server.Startup'`.
 
 ### Run tests
 ```bash
