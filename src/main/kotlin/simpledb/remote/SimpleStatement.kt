@@ -11,9 +11,9 @@ import java.sql.*
 class SimpleStatement(private val rstmt: RemoteStatement) : StatementAdapter() {
 
     @Throws(SQLException::class)
-    override fun executeQuery(qry: String): ResultSet {
+    override fun executeQuery(sql: String): ResultSet {
         try {
-            val rrs = rstmt.executeQuery(qry)
+            val rrs = rstmt.executeQuery(sql)
             return SimpleResultSet(rrs)
         } catch (e: Exception) {
             throw SQLException(e)
@@ -22,9 +22,9 @@ class SimpleStatement(private val rstmt: RemoteStatement) : StatementAdapter() {
     }
 
     @Throws(SQLException::class)
-    override fun executeUpdate(cmd: String): Int {
+    override fun executeUpdate(sql: String): Int {
         try {
-            return rstmt.executeUpdate(cmd)
+            return rstmt.executeUpdate(sql)
         } catch (e: Exception) {
             throw SQLException(e)
         }

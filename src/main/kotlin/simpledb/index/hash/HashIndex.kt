@@ -70,12 +70,12 @@ class HashIndex
      * Inserts a new record into the table scan for the bucket.
      * @see simpledb.index.Index.insert
      */
-    override fun insert(`val`: Constant, rid: RID) {
-        beforeFirst(`val`)
+    override fun insert(dataval: Constant, datarid: RID) {
+        beforeFirst(dataval)
         ts!!.insert()
-        ts!!.setInt("block", rid.blockNumber())
-        ts!!.setInt("id", rid.id())
-        ts!!.setVal("dataval", `val`)
+        ts!!.setInt("block", datarid.blockNumber())
+        ts!!.setInt("id", datarid.id())
+        ts!!.setVal("dataval", dataval)
     }
 
     /**
@@ -85,10 +85,10 @@ class HashIndex
      * specified record is found.
      * @see simpledb.index.Index.delete
      */
-    override fun delete(`val`: Constant, rid: RID) {
-        beforeFirst(`val`)
+    override fun delete(dataval: Constant, datarid: RID) {
+        beforeFirst(dataval)
         while (next())
-            if (dataRid == rid) {
+            if (dataRid == datarid) {
                 ts!!.delete()
                 return
             }
@@ -116,7 +116,9 @@ class HashIndex
          * @param rpb the number of records per block (not used here)
          * @return the cost of traversing the index
          */
-        fun searchCost(numblocks: Int, rpb: Int): Int {
+        fun searchCost(numblocks: Int,
+                       @Suppress("UNUSED_PARAMETER")
+                       rpb: Int): Int {
             return numblocks / HashIndex.NUM_BUCKETS
         }
     }

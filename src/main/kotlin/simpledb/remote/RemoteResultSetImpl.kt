@@ -58,10 +58,10 @@ constructor(plan: Plan, private val rconn: RemoteConnectionImpl) : UnicastRemote
      */
     @Throws(RemoteException::class)
     override fun getInt(fldname: String): Int {
-        var fldname = fldname
+        var varfldname = fldname
         try {
-            fldname = fldname.toLowerCase() // to ensure case-insensitivity
-            return s.getInt(fldname)
+            varfldname = varfldname.toLowerCase() // to ensure case-insensitivity
+            return s.getInt(varfldname)
         } catch (e: RuntimeException) {
             rconn.rollback()
             throw e
@@ -76,10 +76,10 @@ constructor(plan: Plan, private val rconn: RemoteConnectionImpl) : UnicastRemote
      */
     @Throws(RemoteException::class)
     override fun getString(fldname: String): String {
-        var fldname = fldname
+        var varfldname = fldname
         try {
-            fldname = fldname.toLowerCase() // to ensure case-insensitivity
-            return s.getString(fldname)
+            varfldname = varfldname.toLowerCase() // to ensure case-insensitivity
+            return s.getString(varfldname)
         } catch (e: RuntimeException) {
             rconn.rollback()
             throw e

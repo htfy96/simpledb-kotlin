@@ -57,6 +57,7 @@ internal class TablePlanner
      */
     fun makeJoinPlan(current: Plan): Plan? {
         val currsch = current.schema()
+        @Suppress("UNUSED_VARIABLE")
         val joinpred = mypred.joinPred(myschema!!, currsch) ?: return null
         var p = makeIndexJoin(current, currsch)
         if (p == null)

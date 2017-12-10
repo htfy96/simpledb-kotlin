@@ -32,8 +32,8 @@ class Block
         return blknum
     }
 
-    override fun equals(obj: Any?): Boolean {
-        val blk = obj as Block?
+    override fun equals(other: Any?): Boolean {
+        val blk = other as Block?
         return filename == blk!!.filename && blknum == blk.blknum
     }
 

@@ -19,13 +19,13 @@ class StringConstant
         return `val`
     }
 
-    override fun equals(obj: Any?): Boolean {
-        val sc = obj as StringConstant?
+    override fun equals(other: Any?): Boolean {
+        val sc = other as StringConstant?
         return sc != null && `val` == sc.`val`
     }
 
-    override fun compareTo(c: Constant): Int {
-        val sc = c as StringConstant
+    override fun compareTo(other: Constant): Int {
+        val sc = other as StringConstant
         return `val`.compareTo(sc.`val`)
     }
 

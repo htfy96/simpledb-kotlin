@@ -18,7 +18,7 @@ internal class CheckpointRecord : LogRecord {
      * from the basic log record.
      * @param rec the basic log record
      */
-    constructor(rec: BasicLogRecord)
+    constructor(@Suppress("UNUSED_PARAMETER") rec: BasicLogRecord)
 
     /**
      * Writes a checkpoint record to the log.

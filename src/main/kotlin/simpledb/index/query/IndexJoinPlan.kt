@@ -20,7 +20,14 @@ class IndexJoinPlan
  * @param joinfield the left-hand field used for joining
  * @param tx the calling transaction
  */
-(private val p1: Plan, private val p2: Plan, private val ii: IndexInfo, private val joinfield: String, tx: Transaction) : Plan {
+(
+        private val p1: Plan,
+        private val p2: Plan,
+        private val ii: IndexInfo,
+        private val joinfield: String,
+        @Suppress("UNUSED_PARAMETER")
+        tx: Transaction
+) : Plan {
     private val sch = Schema()
 
     init {

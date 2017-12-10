@@ -41,8 +41,8 @@ class GroupValue
      * for their grouping fields.
      * @see java.lang.Object.equals
      */
-    override fun equals(obj: Any?): Boolean {
-        val gv = obj as GroupValue?
+    override fun equals(other: Any?): Boolean {
+        val gv = other as GroupValue?
         for (fldname in vals.keys) {
             val v1 = vals[fldname]
             val v2 = gv!!.getVal(fldname)

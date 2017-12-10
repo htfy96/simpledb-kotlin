@@ -40,7 +40,7 @@ class StatInfo
      * @param fldname the name of the field
      * @return a guess as to the number of distinct field values
      */
-    fun distinctValues(fldname: String): Int {
+    fun distinctValues(@Suppress("UNUSED_PARAMETER") fldname: String): Int {
         return 1 + numRecs / 3
     }
 }

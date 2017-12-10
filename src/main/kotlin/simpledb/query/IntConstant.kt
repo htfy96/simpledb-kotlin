@@ -24,13 +24,13 @@ class IntConstant
         return `val`
     }
 
-    override fun equals(obj: Any?): Boolean {
-        val ic = obj as IntConstant?
+    override fun equals(other: Any?): Boolean {
+        val ic = other as IntConstant?
         return ic != null && `val` == ic.`val`
     }
 
-    override fun compareTo(c: Constant): Int {
-        val ic = c as IntConstant
+    override fun compareTo(other: Constant): Int {
+        val ic = other as IntConstant
         return `val`.compareTo(ic.`val`)
     }
 

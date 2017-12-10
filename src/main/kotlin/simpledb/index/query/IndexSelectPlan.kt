@@ -19,7 +19,13 @@ class IndexSelectPlan
  * @param val the selection constant
  * @param tx the calling transaction
  */
-(private val p: Plan, private val ii: IndexInfo, private val `val`: Constant, tx: Transaction) : Plan {
+(
+        private val p: Plan,
+        private val ii: IndexInfo,
+        private val `val`: Constant,
+        @Suppress("UNUSED_PARAMETER")
+        tx: Transaction
+) : Plan {
 
     /**
      * Creates a new indexselect scan for this query

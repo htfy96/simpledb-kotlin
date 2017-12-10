@@ -25,7 +25,7 @@ class SimpleDriver : DriverAdapter() {
      * @see java.sql.Driver.connect
     </P> */
     @Throws(SQLException::class)
-    override fun connect(url: String, prop: Properties): Connection {
+    override fun connect(url: String, info: Properties): Connection {
         try {
             val host = url.replace("jdbc:simpledb://", "")  //assumes no port specified
             val reg = LocateRegistry.getRegistry(host)

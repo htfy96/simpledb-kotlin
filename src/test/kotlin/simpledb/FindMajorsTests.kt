@@ -27,7 +27,7 @@ object FindMajorsTests {
     @TestFactory
     fun findMajors() = studentMajorList.map({ (input, expected) ->
         DynamicTest.dynamicTest("Test members of dept $input") {
-            var conn: Connection? = null
+            val conn: Connection?
             // Step 1: connect to database server
             val d = SimpleDriver()
             conn = d.connect("jdbc:simpledb://localhost", java.util.Properties())

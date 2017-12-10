@@ -21,9 +21,9 @@ class SimpleResultSet(private val rrs: RemoteResultSet) : ResultSetAdapter() {
     }
 
     @Throws(SQLException::class)
-    override fun getInt(fldname: String): Int {
+    override fun getInt(columnLabel: String): Int {
         try {
-            return rrs.getInt(fldname)
+            return rrs.getInt(columnLabel)
         } catch (e: Exception) {
             throw SQLException(e)
         }
@@ -31,9 +31,9 @@ class SimpleResultSet(private val rrs: RemoteResultSet) : ResultSetAdapter() {
     }
 
     @Throws(SQLException::class)
-    override fun getString(fldname: String): String {
+    override fun getString(columnLabel: String): String {
         try {
-            return rrs.getString(fldname)
+            return rrs.getString(columnLabel)
         } catch (e: Exception) {
             throw SQLException(e)
         }

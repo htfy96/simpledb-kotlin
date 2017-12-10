@@ -65,6 +65,7 @@ class RecoveryMgr
      * @param newval the value to be written
      */
     fun setInt(buff: Buffer, offset: Int,
+               @Suppress("UNUSED_PARAMETER")
                newval: Int): Int {
         val oldval = buff.getInt(offset)
         val blk = buff.block()!!
@@ -82,7 +83,12 @@ class RecoveryMgr
      * @param offset the offset of the value in the page
      * @param newval the value to be written
      */
-    fun setString(buff: Buffer, offset: Int, newval: String): Int {
+    fun setString(
+            buff: Buffer,
+            offset: Int,
+            @Suppress("UNUSED_PARAMETER")
+            newval: String
+    ): Int {
         val oldval = buff.getString(offset)
         val blk = buff.block()!!
         return if (isTempBlock(blk))

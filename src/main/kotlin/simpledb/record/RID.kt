@@ -31,8 +31,8 @@ class RID
         return id
     }
 
-    override fun equals(obj: Any?): Boolean {
-        val r = obj as RID?
+    override fun equals(other: Any?): Boolean {
+        val r = other as RID?
         return blknum == r!!.blknum && id == r.id
     }
 

@@ -27,12 +27,12 @@ internal class RecordFormatter
      * each string field is given a value of "".
      * @see simpledb.buffer.PageFormatter.format
      */
-    override fun format(page: Page) {
+    override fun format(p: Page) {
         val recsize = ti.recordLength() + INT_SIZE
         var pos = 0
         while (pos + recsize <= BLOCK_SIZE) {
-            page.setInt(pos, EMPTY)
-            makeDefaultRecord(page, pos)
+            p.setInt(pos, EMPTY)
+            makeDefaultRecord(p, pos)
             pos += recsize
         }
     }
