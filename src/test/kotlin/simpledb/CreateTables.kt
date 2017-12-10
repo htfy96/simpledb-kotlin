@@ -1,21 +1,8 @@
 package simpledb
 
 import org.junit.jupiter.api.Assertions
-import simpledb.remote.RemoteDriverImpl
 import simpledb.remote.SimpleDriver
-import simpledb.server.SimpleDB
-import java.rmi.registry.LocateRegistry
 
-fun startupDBServer() {
-    SimpleDB.init("studentdb-test")
-    val reg = LocateRegistry.createRegistry(1099)
-
-    // and post the server entry in it
-    val d = RemoteDriverImpl()
-    reg.rebind("simpledb", d)
-
-    println("database server ready")
-}
 
 fun createTables() {
     val d = SimpleDriver()

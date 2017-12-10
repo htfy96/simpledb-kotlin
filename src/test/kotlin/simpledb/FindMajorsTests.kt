@@ -8,11 +8,15 @@ import java.sql.Connection
 object FindMajorsTests {
     @BeforeAll
     @JvmStatic
-    fun bootstrap() {
-        startupDBServer()
-        createTables()
+    fun startupServer() {
+        TestServerBootstraper.startupDBServer()
     }
 
+    @AfterAll
+    @JvmStatic
+    fun shutdownServer() {
+        TestServerBootstraper.shutdownDBServer()
+    }
 
     private val studentMajorList = listOf(
             "math" to setOf("amy", "sue", "kim", "pat"),
