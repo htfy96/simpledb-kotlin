@@ -43,7 +43,7 @@ class SimpleResultSet(private val rrs: RemoteResultSet) : ResultSetAdapter() {
     @Throws(SQLException::class)
     override fun getMetaData(): ResultSetMetaData {
         try {
-            val rmd = rrs.metaData
+            val rmd = rrs.getMetaData()
             return SimpleMetaData(rmd)
         } catch (e: Exception) {
             throw SQLException(e)

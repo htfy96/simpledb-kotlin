@@ -27,9 +27,8 @@ constructor(plan: Plan, private val rconn: RemoteConnectionImpl) : UnicastRemote
      * by passing its schema into the RemoteMetaData constructor.
      * @see simpledb.remote.RemoteResultSet.getMetaData
      */
-    override val metaData: RemoteMetaData
-        @Throws(RemoteException::class)
-        get() = RemoteMetaDataImpl(sch)
+    override fun getMetaData(): RemoteMetaData = RemoteMetaDataImpl(sch)
+
 
     init {
         s = plan.open()

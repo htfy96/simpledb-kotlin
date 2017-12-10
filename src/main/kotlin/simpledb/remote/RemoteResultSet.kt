@@ -9,7 +9,11 @@ import java.rmi.*
  * @author Edward Sciore
  */
 interface RemoteResultSet : Remote {
-    val metaData: RemoteMetaData
+
+
+    @Throws(RemoteException::class)
+    fun getMetaData(): RemoteMetaData
+
     @Throws(RemoteException::class)
     operator fun next(): Boolean
 
@@ -21,5 +25,6 @@ interface RemoteResultSet : Remote {
 
     @Throws(RemoteException::class)
     fun close()
+
 }
 
