@@ -7,9 +7,13 @@ A modernized codebase of SimpleDB in Kotlin with Gradle, JUnit, etc..
 Currently based on [SimpleDB-2.10](http://www.cs.bc.edu/~sciore/simpledb/intro.html). The original author is Edward Sciore (sciore@bc.edu).
 
 This project is still in WIP state. To-dos include:
-- Migrate `StudentClient` into tests
-- Fix nullability & synchronization issues.
-- Introduce continous integration
+- [ ] Migrate `StudentClient` into tests
+    - [x] `createTable`
+    - [x] `Findmajors`
+    - [x] `ChangeMajor`
+    - [ ] add new tests
+- [ ] Fix nullability & synchronization issues.
+- [ ] Introduce continous integration
 
 ## Usage
 
