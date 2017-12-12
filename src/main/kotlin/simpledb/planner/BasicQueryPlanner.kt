@@ -37,7 +37,10 @@ class BasicQueryPlanner : QueryPlanner {
         p = SelectPlan(p, data.pred())
 
         //Step 4: Project on the field names
-        p = ProjectPlan(p, data.fields())
+        if (!data.fields().contains("*")) {
+            p = ProjectPlan(p, data.fields())
+        }
+
         return p
     }
 }

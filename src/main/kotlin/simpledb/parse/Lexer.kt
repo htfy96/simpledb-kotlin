@@ -66,7 +66,7 @@ class Lexer
      * @return true if the current token is an identifier
      */
     fun matchId(): Boolean {
-        return tok.ttype == StreamTokenizer.TT_WORD && !keywords!!.contains(tok.sval)
+        return tok.ttype == 42 || (tok.ttype == StreamTokenizer.TT_WORD && !keywords!!.contains(tok.sval))
     }
 
     //Methods to "eat" the current token
@@ -133,7 +133,7 @@ class Lexer
     fun eatId(): String {
         if (!matchId())
             throw BadSyntaxException()
-        val s = tok.sval
+        val s = tok.sval ?: "*"
         nextToken()
         return s
     }
