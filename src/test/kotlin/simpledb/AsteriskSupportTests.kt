@@ -5,7 +5,7 @@ import simpledb.remote.SimpleDriver
 import java.sql.Connection
 import kotlin.test.assertEquals
 
-object NewFunctionTests {
+object AsteriskSupportTests {
     @BeforeAll
     @JvmStatic
     fun startupServer() {
@@ -48,13 +48,13 @@ object NewFunctionTests {
             val result = rs.use {
                 generateSequence {
                     if (rs.next())
-                        rs.getString("sid") +
+                        rs.getInt("sid").toString() +
                                 rs.getString("sname") +
-                                rs.getString("majorid") +
-                                rs.getString("gradyear")
+                                rs.getInt("majorid").toString() +
+                                rs.getInt("gradyear").toString()
                     else
                         null
-                }
+                }.toList()
             }
 
             //Step 3: execute the ground truth query
@@ -66,13 +66,13 @@ object NewFunctionTests {
             val expected = expected_rs.use {
                 generateSequence {
                     if (expected_rs.next())
-                        expected_rs.getString("sid") +
+                        expected_rs.getInt("sid").toString() +
                                 expected_rs.getString("sname") +
-                                expected_rs.getString("majorid") +
-                                expected_rs.getString("gradyear")
+                                expected_rs.getInt("majorid").toString() +
+                                expected_rs.getInt("gradyear").toString()
                     else
                         null
-                }
+                }.toList()
             }
 
             Assertions.assertEquals(expected, result)
