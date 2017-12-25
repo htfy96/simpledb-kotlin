@@ -4,6 +4,7 @@ import simpledb.tx.recovery.LogRecord.*
 import simpledb.file.Block
 import simpledb.buffer.Buffer
 import simpledb.server.SimpleDB
+import simpledb.tx.Transaction
 import simpledb.tx.recovery.LogRecord.Companion.CHECKPOINT
 import simpledb.tx.recovery.LogRecord.Companion.COMMIT
 import simpledb.tx.recovery.LogRecord.Companion.ROLLBACK
@@ -49,7 +50,8 @@ class RecoveryMgr
      * then writes a quiescent checkpoint record to the log and flushes it.
      */
     fun recover() {
-        doRecover()
+        val maxTxNum = doRecover()
+        Transaction.Companion.nextTxNum = maxTxNum
         SimpleDB.bufferMgr().flushAll(txnum)
         val lsn = CheckpointRecord().writeToLog()
         SimpleDB.logMgr().flush(lsn)
@@ -97,6 +99,21 @@ class RecoveryMgr
             SetStringRecord(txnum, blk, offset, oldval).writeToLog()
     }
 
+    fun getValueFromRecovery(blk: Block, offset: Int, readViewBefore: Int, curTxNum: Int): Any? {
+        val finishedTxs = ArrayList<Int>()
+        for (rec in LogRecordIterator()) {
+            if (rec.op() == COMMIT)
+                finishedTxs.add(rec.txNumber())
+            if (finishedTxs.contains(rec.txNumber()) && rec is LogSetRecord) {
+                if (rec.getBlock() == blk && rec.getOffset() == offset &&
+                        (rec.txNumber() < readViewBefore || rec.txNumber() == curTxNum)) {
+                    return rec.getValue()
+                }
+            }
+        }
+        return null
+    }
+
     /**
      * Rolls back the transaction.
      * The method iterates through the log records,
@@ -124,18 +141,19 @@ class RecoveryMgr
      * The method stops when it encounters a CHECKPOINT record
      * or the end of the log.
      */
-    private fun doRecover() {
+    private fun doRecover(): Int {
         val finishedTxs = ArrayList<Int>()
         val iter = LogRecordIterator()
         while (iter.hasNext()) {
             val rec = iter.next()
             if (rec.op() == CHECKPOINT)
-                return
+                break
             if (rec.op() == COMMIT || rec.op() == ROLLBACK)
                 finishedTxs.add(rec.txNumber())
             else if (!finishedTxs.contains(rec.txNumber()))
                 rec.undo(txnum)
         }
+        return finishedTxs.max() ?: 0
     }
 
     /**

@@ -12,10 +12,11 @@ import simpledb.tx.concurrency.ConcurrencyMgr
  * and in general satisfy the ACID properties.
  * @author Edward Sciore
  */
-class Transaction {
+class Transaction: AutoCloseable {
     private val recoveryMgr: RecoveryMgr
     private val concurMgr: ConcurrencyMgr
     private val txnum: Int
+    private val readViewBeforeTxNum: Int
     private val myBuffers = BufferList()
 
     /**
@@ -31,7 +32,9 @@ class Transaction {
      * is called first.
      */
     init {
-        txnum = nextTxNumber()
+        val newTxResult = registerNewTansaction()
+        txnum = newTxResult.txNum
+        readViewBeforeTxNum = newTxResult.readViewBeforeTxNum
         recoveryMgr = RecoveryMgr(txnum)
         concurMgr = ConcurrencyMgr()
     }
@@ -110,6 +113,27 @@ class Transaction {
         return buff.getInt(offset)
     }
 
+    private fun nonblockingGet(blk: Block, offset: Int, lastTxOffset: Int, op: (Buffer) -> Any): Any? {
+        concurMgr.sLock(blk)
+        val buff = myBuffers.getBuffer(blk)!!
+        val lastTx = buff.getInt(lastTxOffset)
+        if (lastTx < readViewBeforeTxNum || lastTx == txnum) {
+            concurMgr.unlock(blk)
+            return op(buff)
+        }
+        concurMgr.unlock(blk)
+        return recoveryMgr.getValueFromRecovery(blk, offset, readViewBeforeTxNum, txnum)
+    }
+
+    fun nonblockingGetInt(blk: Block, offset: Int, lastTxOffset: Int): Int? =
+        nonblockingGet(blk, offset, lastTxOffset, {buff ->
+            buff.getInt(offset)
+        }) as Int?
+
+    fun nonblockingGetString(blk: Block, offset: Int, lastTxOffset: Int): String? =
+            nonblockingGet(blk, offset, lastTxOffset, {buff -> buff.getString(offset)}) as String?
+
+
     /**
      * Returns the string value stored at the
      * specified offset of the specified block.
@@ -145,6 +169,15 @@ class Transaction {
         buff.setInt(offset, `val`, txnum, lsn)
     }
 
+    fun mvccSetInt(blk: Block, offset: Int, `val`: Int, lastTxOffset: Int) {
+        concurMgr.xLock(blk)
+        val buff = myBuffers.getBuffer(blk)!!
+        val lsn = recoveryMgr.setInt(buff, offset, `val`)
+        buff.setInt(offset, `val`, txnum, lsn)
+        val recordlsn = recoveryMgr.setInt(buff, lastTxOffset, txnum)
+        buff.setInt(lastTxOffset, txnum, txnum, recordlsn)
+    }
+
     /**
      * Stores a string at the specified offset
      * of the specified block.
@@ -163,6 +196,15 @@ class Transaction {
         val buff = myBuffers.getBuffer(blk)!!
         val lsn = recoveryMgr.setString(buff, offset, `val`)
         buff.setString(offset, `val`, txnum, lsn)
+    }
+
+    fun mvccSetString(blk: Block, offset: Int, `val`: String, lastTxOffset: Int) {
+        concurMgr.xLock(blk)
+        val buff = myBuffers.getBuffer(blk)!!
+        val lsn = recoveryMgr.setString(buff, offset, `val`)
+        buff.setString(offset, `val`, txnum, lsn)
+        val recordlsn = recoveryMgr.setInt(buff, lastTxOffset, txnum)
+        buff.setInt(lastTxOffset, txnum, txnum, recordlsn)
     }
 
     /**
@@ -196,14 +238,33 @@ class Transaction {
         return blk
     }
 
-    companion object {
-        private var nextTxNum = 0
-        private val END_OF_FILE = -1
+    override fun close() {
+        unregisterTransaction(txnum)
+    }
 
-        @Synchronized private fun nextTxNumber(): Int {
+    companion object {
+        var nextTxNum = 0
+        private val END_OF_FILE = -1
+        private val transactionList = mutableListOf<Int>()
+
+        data class NewTransactionResult(
+                val txNum: Int,
+                val readViewBeforeTxNum: Int
+        )
+
+
+        @Synchronized private fun registerNewTansaction(): NewTransactionResult {
             nextTxNum++
+            transactionList.add(nextTxNum)
             println("new transaction: " + nextTxNum)
-            return nextTxNum
+            println("Current transaction: $transactionList")
+            return NewTransactionResult(txNum = nextTxNum, readViewBeforeTxNum = transactionList.min()!!)
         }
+
+        @Synchronized private fun unregisterTransaction(txnum: Int) {
+            transactionList.remove(txnum)
+        }
+
+        @Synchronized private fun getCurrentTransactionList() = transactionList.toList()
     }
 }

@@ -47,6 +47,7 @@ constructor() : UnicastRemoteObject(), RemoteConnection {
     @Throws(RemoteException::class)
     override fun close() {
         transaction!!.commit()
+        transaction!!.close()
     }
 
     /**
@@ -55,6 +56,7 @@ constructor() : UnicastRemoteObject(), RemoteConnection {
      */
     fun commit() {
         transaction!!.commit()
+        transaction!!.close()
         transaction = Transaction()
     }
 
@@ -64,6 +66,7 @@ constructor() : UnicastRemoteObject(), RemoteConnection {
      */
     fun rollback() {
         transaction!!.rollback()
+        transaction!!.close()
         transaction = Transaction()
     }
 }

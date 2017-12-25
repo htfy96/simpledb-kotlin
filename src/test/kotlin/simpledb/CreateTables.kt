@@ -65,4 +65,5 @@ fun createTables() {
     for (i in enrollvals.indices)
         Assertions.assertEquals(1, stmt.executeUpdate(s + enrollvals[i]))
     println("ENROLL records inserted.")
+    conn.close()
 }

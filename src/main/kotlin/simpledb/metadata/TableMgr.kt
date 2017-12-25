@@ -28,6 +28,7 @@ class TableMgr
         val tcatSchema = Schema()
         tcatSchema.addStringField("tblname", MAX_NAME)
         tcatSchema.addIntField("reclength")
+        tcatSchema.addIntField("_txnum") // need to add manually here
         tcatInfo = TableInfo("tblcat", tcatSchema)
 
         val fcatSchema = Schema()
@@ -36,6 +37,7 @@ class TableMgr
         fcatSchema.addIntField("type")
         fcatSchema.addIntField("length")
         fcatSchema.addIntField("offset")
+        fcatSchema.addIntField("_txnum") // need to add manually here
         fcatInfo = TableInfo("fldcat", fcatSchema)
 
         if (isNew) {
@@ -51,6 +53,9 @@ class TableMgr
      * @param tx the transaction creating the table
      */
     fun createTable(tblname: String, sch: Schema, tx: Transaction) {
+        if (!sch.fields().contains("_txnum"))
+            sch.addIntField("_txnum")
+
         val ti = TableInfo(tblname, sch)
         // insert one record into tblcat
         val tcatfile = RecordFile(tcatInfo, tx)
@@ -58,6 +63,7 @@ class TableMgr
         tcatfile.setString("tblname", tblname)
         tcatfile.setInt("reclength", ti.recordLength())
         tcatfile.close()
+
 
         // insert a record into fldcat for each field
         val fcatfile = RecordFile(fcatInfo, tx)
@@ -80,13 +86,17 @@ class TableMgr
      * @return the table's stored metadata
      */
     fun getTableInfo(tblname: String, tx: Transaction): TableInfo {
+        println("Getting table info of $tblname")
         val tcatfile = RecordFile(tcatInfo, tx)
         var reclen = -1
-        while (tcatfile.next())
+        while (tcatfile.next()) {
+            println(" Current tblname = ${tcatfile.getString("tblname")}")
             if (tcatfile.getString("tblname") == tblname) {
                 reclen = tcatfile.getInt("reclength")
+                assert(reclen > 0)
                 break
             }
+        }
         tcatfile.close()
 
         val fcatfile = RecordFile(fcatInfo, tx)

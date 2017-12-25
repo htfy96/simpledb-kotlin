@@ -5,7 +5,7 @@ import simpledb.buffer.*
 import simpledb.file.Block
 import simpledb.log.BasicLogRecord
 
-internal class SetStringRecord : LogRecord {
+internal class SetStringRecord : LogRecord, LogSetRecord {
     private var txnum: Int = 0
     private var offset: Int = 0
     private var `val`: String? = null
@@ -61,6 +61,18 @@ internal class SetStringRecord : LogRecord {
 
     override fun toString(): String {
         return "<SETSTRING $txnum $blk $offset $`val`>"
+    }
+
+    override fun getBlock(): Block {
+        return blk!!
+    }
+
+    override fun getOffset(): Int {
+        return offset
+    }
+
+    override fun getValue(): Any {
+        return `val`!!
     }
 
     /**

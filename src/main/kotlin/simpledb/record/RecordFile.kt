@@ -58,6 +58,14 @@ class RecordFile
         }
     }
 
+    fun nonBlockingGetInt(fldname: String): Int {
+        return rp!!.getInt(fldname)
+    }
+
+    fun nonBlockingGetString(fldname: String): String {
+        return rp!!.getString(fldname)
+    }
+
     /**
      * Returns the value of the specified field
      * in the current record.

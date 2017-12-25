@@ -18,57 +18,9 @@ class TableScan
  * @param ti the table's metadata
  * @param tx the calling transaction
  */
-(ti: TableInfo, tx: Transaction) : UpdateScan {
-    private val rf: RecordFile
-    private val sch: Schema?
-
+(ti: TableInfo, tx: Transaction) : TableScanBase(ti, tx), UpdateScan {
     override val rid: RID
         get() = rf.currentRid()
-
-    init {
-        rf = RecordFile(ti, tx)
-        sch = ti.schema()
-    }
-
-    // Scan methods
-
-    override fun beforeFirst() {
-        rf.beforeFirst()
-    }
-
-    override fun next(): Boolean {
-        return rf.next()
-    }
-
-    override fun close() {
-        rf.close()
-    }
-
-    /**
-     * Returns the value of the specified field, as a Constant.
-     * The schema is examined to determine the field's type.
-     * If INTEGER, then the record file's getInt method is called;
-     * otherwise, the getString method is called.
-     * @see simpledb.query.Scan.getVal
-     */
-    override fun getVal(fldname: String): Constant {
-        return if (sch!!.type(fldname) == INTEGER)
-            IntConstant(rf.getInt(fldname))
-        else
-            StringConstant(rf.getString(fldname))
-    }
-
-    override fun getInt(fldname: String): Int {
-        return rf.getInt(fldname)
-    }
-
-    override fun getString(fldname: String): String {
-        return rf.getString(fldname)
-    }
-
-    override fun hasField(fldname: String): Boolean {
-        return sch!!.hasField(fldname)
-    }
 
     // UpdateScan methods
 
@@ -80,7 +32,7 @@ class TableScan
      * @see simpledb.query.UpdateScan.setVal
      */
     override fun setVal(fldname: String, `val`: Constant) {
-        if (sch!!.type(fldname) == INTEGER)
+        if (sch.type(fldname) == INTEGER)
             rf.setInt(fldname, `val`.asJavaVal() as Int)
         else
             rf.setString(fldname, `val`.asJavaVal() as String)

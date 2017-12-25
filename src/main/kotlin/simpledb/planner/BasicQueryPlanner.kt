@@ -25,7 +25,7 @@ class BasicQueryPlanner : QueryPlanner {
             if (viewdef != null)
                 plans.add(SimpleDB.planner().createQueryPlan(viewdef, tx))
             else
-                plans.add(TablePlan(tblname, tx))
+                plans.add(NonblockingTablePlan(tblname, tx))
         }
 
         //Step 2: Create the product of all table plans
@@ -34,7 +34,7 @@ class BasicQueryPlanner : QueryPlanner {
             p = ProductPlan(p, nextplan)
 
         //Step 3: Add a selection plan for the predicate
-        p = SelectPlan(p, data.pred())
+        p = NonblockingSelectPlan(p, data.pred())
 
         //Step 4: Project on the field names
         p = ProjectPlan(p, data.fields())

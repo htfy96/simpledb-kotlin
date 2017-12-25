@@ -101,7 +101,12 @@ object MajorTests {
                 val oldResult = getMajorIdBySname(conn, sname)
                 print("old result=$oldResult")
 
-                Assertions.assertEquals(1, oldResult.count())
+                try {
+                    Assertions.assertEquals(1, oldResult.count())
+                } catch (e: AssertionError) {
+                    dumpStudentTable(conn)
+                    throw e
+                }
                 val oldMajorId = oldResult[0]
                 println("old major id=$oldMajorId")
 
@@ -121,6 +126,7 @@ object MajorTests {
                         "update STUDENT set MajorId=$oldMajorId where SName = '$sname'"
                 )
                 assertEquals(1, recoverResult)
+                conn.close()
             }
         })
 

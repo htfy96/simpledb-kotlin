@@ -59,15 +59,28 @@ class RecordPage
         return tx.getInt(blk!!, position)
     }
 
+    fun nonBlockingGetInt(fldname: String): Int {
+        val position = fieldpos(fldname)
+        val txnumpos = fieldpos("_txnum")
+        return tx.nonblockingGetInt(blk!!, position, txnumpos)!!
+    }
+
     /**
      * Returns the string value stored for the
      * specified field of the current record.
      * @param fldname the name of the field.
      * @return the string stored in that field
      */
+
     fun getString(fldname: String): String {
         val position = fieldpos(fldname)
         return tx.getString(blk!!, position)
+    }
+
+    fun nonBlockingGetString(fldname: String): String {
+        val position = fieldpos(fldname)
+        val txnumpos = fieldpos("_txnum")
+        return tx.nonblockingGetString(blk!!, position, txnumpos)!!
     }
 
     /**
@@ -78,7 +91,8 @@ class RecordPage
      */
     fun setInt(fldname: String, `val`: Int) {
         val position = fieldpos(fldname)
-        tx.setInt(blk!!, position, `val`)
+        val txnumpos = fieldpos("_txnum")
+        tx.mvccSetInt(blk!!, position, `val`, txnumpos)
     }
 
     /**
@@ -89,7 +103,8 @@ class RecordPage
      */
     fun setString(fldname: String, `val`: String) {
         val position = fieldpos(fldname)
-        tx.setString(blk!!, position, `val`)
+        val txnumpos = fieldpos("_txnum")
+        tx.mvccSetString(blk!!, position, `val`, txnumpos)
     }
 
     /**
@@ -144,11 +159,20 @@ class RecordPage
         return currentpos() + offset
     }
 
+    private fun getFlagAtPos(blk: Block, position: Int, tx: Transaction): Int {
+        if (ti.schema().fields().contains("_txnum"))
+            return tx.nonblockingGetInt(blk, position, fieldpos("_txnum")) ?: 0
+        else {
+            println(" warning: _txnum has not been created. Query may be inaccurate")
+            return tx.getInt(blk, offset = position)
+        }
+    }
+
     private fun searchFor(flag: Int): Boolean {
         currentslot++
         while (isValidSlot) {
             val position = currentpos()
-            if (tx.getInt(blk!!, position) == flag)
+            if (getFlagAtPos(blk!!, position, tx) == flag)
                 return true
             currentslot++
         }

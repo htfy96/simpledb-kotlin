@@ -27,6 +27,12 @@ class ConcurrencyMgr {
         }
     }
 
+    fun unlock(blk: Block) {
+        assert(locks[blk] != null)
+        locks.remove(blk)
+        locktbl.unlock(blk)
+    }
+
     /**
      * Obtains an XLock on the block, if necessary.
      * If the transaction does not have an XLock on that block,

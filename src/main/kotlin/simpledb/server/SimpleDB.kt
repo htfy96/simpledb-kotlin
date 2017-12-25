@@ -48,6 +48,7 @@ object SimpleDB {
         }
         initMetadataMgr(isnew, tx)
         tx.commit()
+        tx.close()
     }
 
     // The following initialization methods are useful for
