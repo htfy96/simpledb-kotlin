@@ -37,9 +37,17 @@ class Parser(s: String) {
 
     fun term(): Term {
         val lhs = expression()
-        lex.eatDelim('=')
+        var delim: Char
+        if (lex.matchDelim('=')) {
+            lex.eatDelim('=')
+            delim = '='
+        }
+        else if (lex.matchDelim('<')) {
+            lex.eatDelim('<')
+            delim = '<'
+        }
         val rhs = expression()
-        return Term(lhs, rhs)
+        return Term(lhs, rhs, delim)
     }
 
     fun predicate(): Predicate {
@@ -47,6 +55,10 @@ class Parser(s: String) {
         if (lex.matchKeyword("and")) {
             lex.eatKeyword("and")
             pred.conjoinWith(predicate())
+        }
+        else if (lex.matchKeyword("or")) {
+            lex.eatKeyword("or")
+            pred.disjoinWith(predicate())
         }
         return pred
     }

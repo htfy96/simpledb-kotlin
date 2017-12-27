@@ -13,7 +13,7 @@ class Term
  * @param lhs  the LHS expression
  * @param rhs  the RHS expression
  */
-(private val lhs: Expression, private val rhs: Expression) {
+(private val lhs: Expression, private val rhs: Expression, private val op: Char) {
 
     /**
      * Calculates the extent to which selecting on the term reduces
@@ -109,10 +109,13 @@ class Term
     fun isSatisfied(s: Scan): Boolean {
         val lhsval = lhs.evaluate(s)
         val rhsval = rhs.evaluate(s)
-        return rhsval == lhsval
+        if (op == '=')
+            return lhsval == rhsval
+        else
+            return lhsval < rhsval
     }
 
     override fun toString(): String {
-        return lhs.toString() + "=" + rhs.toString()
+        return lhs.toString() + op + rhs.toString()
     }
 }

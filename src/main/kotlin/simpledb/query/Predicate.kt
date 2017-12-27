@@ -9,6 +9,7 @@ import java.util.*
  */
 class Predicate {
     private val terms = ArrayList<Term>()
+    private val connectors = ArrayList<Boolean>()
 
     /**
      * Creates an empty predicate, corresponding to "true".
@@ -21,6 +22,12 @@ class Predicate {
      */
     constructor(t: Term) {
         terms.add(t)
+        connectors.add(true)
+    }
+
+    constructor(t: Term, c: Boolean) {
+        terms.add(t)
+        connectors.add(c)
     }
 
     /**
@@ -30,6 +37,14 @@ class Predicate {
      */
     fun conjoinWith(pred: Predicate) {
         terms.addAll(pred.terms)
+        connectors.addAll(pred.connectors)
+    }
+
+    fun disjoinWith(pred: Predicate) {
+        terms.addAll(pred.terms)
+        val marker = connectors.size
+        connectors.addAll(pred.connectors)
+        connectors[marker] = false
     }
 
     /**
@@ -39,9 +54,15 @@ class Predicate {
      * @return true if the predicate is true in the scan
      */
     fun isSatisfied(s: Scan): Boolean {
-        for (t in terms)
-            if (!t.isSatisfied(s))
-                return false
+        var result: Boolean = true
+        for (index in 0..terms.size) {
+            if (connectors[index]) {
+                result = result && terms[index].isSatisfied(s)
+            }
+            else {
+                result = result || terms[index].isSatisfied(s)
+            }
+        }
         return true
     }
 
@@ -67,9 +88,11 @@ class Predicate {
      */
     fun selectPred(sch: Schema): Predicate? {
         val result = Predicate()
-        for (t in terms)
-            if (t.appliesTo(sch))
+        for ((index, t) in terms.withIndex())
+            if (t.appliesTo(sch)) {
                 result.terms.add(t)
+                result.connectors.add(connectors[index])
+            }
         return if (result.terms.size == 0)
             null
         else
@@ -89,11 +112,13 @@ class Predicate {
         val newsch = Schema()
         newsch.addAll(sch1)
         newsch.addAll(sch2)
-        for (t in terms)
+        for ((index, t) in terms.withIndex())
             if (!t.appliesTo(sch1) &&
                     !t.appliesTo(sch2) &&
-                    t.appliesTo(newsch))
+                    t.appliesTo(newsch)) {
                 result.terms.add(t)
+                result.connectors.add(connectors[index])
+            }
         return if (result.terms.size == 0)
             null
         else
